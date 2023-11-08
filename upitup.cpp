@@ -3,16 +3,22 @@
 #include <array>
 #include <algorithm>
 #include <tuple>
-#include <iostream>
-#include <queue>
-#include <math.h>
-#include <assert.h>
-#include <utility>
-using namespace std;
+#include "queue.hpp"
 
 struct board {
     int e[3][3];
 };
+
+// constexpr int fact(int i)
+// {
+//     int p = 1;
+//     for (int j = 2; j <= i; ++j) {
+//         p *= j;
+//     }
+//     return p;
+//}
+
+
 
 void print_board(const board& b)
 {
@@ -33,147 +39,147 @@ void read_board(board& b)
     }
 }
 
-tuple<int, int> find_space(const board& b)
+void swap(int &a, int &b)
+{
+    int t = a;
+    a = b;
+    b = t;
+}
+
+std::tuple<int, int> find_space(const board& b)
 {
     for (int r = 0; r < 3; ++r)
         for (int c = 0; c < 3; ++c)
-            if (b.e[r][c] == 0) return { r, c };
+            if (b.e[r][c] == 9) return { r, c };
     assert(0);
 }
 
 board up(const board& b)
 {
-    const auto [r,c]= find_space(b);
+    const auto [r, c] = find_space(b);
     if (r == 0) return b;
     board o = b;
-    if (o.e[r-1][c]==1){
-        o.e[r][c]=6;
-    }else if (o.e[r-1][c]==2){
-        o.e[r][c]=5;
-    }else if (o.e[r-1][c]==5){
-        o.e[r][c]=1;
-    }else if (o.e[r-1][c]==6){
-        o.e[r][c]=2;
-    }else{
-        o.e[r][c]=o.e[r-1][c];
-    }
-    o.e[r-1][c]=0;
+    switch (o.e[r-1][c]){
+        case 0: o.e[r-1][c]=4;break;
+        case 1: o.e[r-1][c]=2;break;
+        case 2: o.e[r-1][c]=0;break;
+        case 3: o.e[r-1][c]=3;break;
+        case 4: o.e[r-1][c]=1;break;
+        case 5: o.e[r-1][c]=5;break;
+        default: assert(0) ;   }
+    swap(o.e[r-1][c], o.e[r][c]);
     return o;
 }
 
 board down(const board& b)
 {
-    const auto [r,c]= find_space(b);
+    const auto [r, c] = find_space(b);
     if (r == 2) return b;
     board o = b;
-    if (o.e[r+1][c]==1){
-        o.e[r][c]=5;
-    }else if (o.e[r+1][c]==2){
-        o.e[r][c]=6;
-    }else if (o.e[r+1][c]==5){
-        o.e[r][c]=2;
-    }else if (o.e[r+1][c]==6){
-        o.e[r][c]=1;
-    }else{
-        o.e[r][c]=o.e[r+1][c];
-    }
-    o.e[r+1][c]=0;
+    switch (o.e[r+1][c]){
+        case 0: o.e[r+1][c]=2;break;
+        case 1: o.e[r+1][c]=4;break;
+        case 2: o.e[r+1][c]=1;break;
+        case 3: o.e[r+1][c]=3;break;
+        case 4: o.e[r+1][c]=0;break;
+        case 5: o.e[r+1][c]=5;break;
+        default: assert(0) ;   }
+    swap(o.e[r+1][c], o.e[r][c]);
     return o;
 }
 
 board left(const board& b)
 {
-    const auto [r,c]= find_space(b);
+    const auto [r, c] = find_space(b);
     if (c == 0) return b;
     board o = b;
-    if (o.e[r][c-1]==1){
-        o.e[r][c]=4;
-    }else if (o.e[r][c-1]==4){
-        o.e[r][c]=2;
-    }else if (o.e[r][c-1]==2){
-        o.e[r][c]=3;
-    }else if (o.e[r][c-1]==3){
-        o.e[r][c]=1;
-    }else{
-        o.e[r][c]=o.e[r][c-1];
-    }
-    o.e[r][c-1]=0;
+    switch (o.e[r][c-1]){
+        case 0: o.e[r][c-1]=3;break;
+        case 1: o.e[r][c-1]=5;break;
+        case 2: o.e[r][c-1]=2;break;
+        case 3: o.e[r][c-1]=1;break;
+        case 4: o.e[r][c-1]=4;break;
+        case 5: o.e[r][c-1]=0;break;
+        default: assert(0) ;   }
+    swap(o.e[r][c-1], o.e[r][c]);
     return o;
 }
 
 board right(const board& b)
 {
-    const auto [r,c]= find_space(b);
+    const auto [r, c] = find_space(b);
     if (c == 2) return b;
     board o = b;
-    if (o.e[r][c+1]==1){
-        o.e[r][c]=3;
-    }else if (o.e[r][c+1]==3){
-        o.e[r][c]=2;
-    }else if (o.e[r][c+1]==2){
-        o.e[r][c]=4;
-    }else if (o.e[r][c+1]==4){
-        o.e[r][c]=1;
-    }else{
-        o.e[r][c]=o.e[r][c+1];
-    }
-    o.e[r][c+1]=0;
+     switch (o.e[r][c-1]){
+        case 0: o.e[r][c+1]=5;break;
+        case 1: o.e[r][c+1]=3;break;
+        case 2: o.e[r][c+1]=2;break;
+        case 3: o.e[r][c+1]=0;break;
+        case 4: o.e[r][c+1]=4;break;
+        case 5: o.e[r][c+1]=1;break;
+        default: assert(0) ;   }
+    swap(o.e[r][c+1], o.e[r][c]);
     return o;
+}
+
+bool is_same(const board& a, const board &b)
+{
+    for (int r = 0; r < 3; ++r)
+        for (int c = 0; c < 3; ++c)
+            if (a.e[r][c] != b.e[r][c]) return false;
+
+    return true;
 }
 
 enum move { L = 1, R = 2, U = 3, D = 4 };
 
+int ord(const board& board)
+{
+    //int seen[10] = { 0 };
+    int a = 0;
+    int k = 1;
+
+    for (int r = 0; r < 3; ++r) {
+        for (int c = 0; c < 3; ++c) {
+            a += (board.e[r][c] *k);
+            k = k*7;
+            // int o = 0;
+            // for (int i = 1; i < v; ++i) {
+            //     if (!seen[i]) { ++o; }
+            // }
+            // a += o * fact(k);
+            // --k;
+            // seen[v] = 1;
+        }
+    }
+
+    return a;
+}
+
+#define max_states (40353608)
 /*
  * Return a shortest path from src to dest.
  */
-
-int ord(const board& board){
-    int val=0;
-    int k=8;
-    for (int r = 0; r < 3; ++r) {
-        for (int c = 0; c < 3; ++c) {
-            int v=board.e[r][c];
-            val+=v*pow(7,k);
-            k-=1;
-        }
-    }
-    return val;
-}
-
-board decode(int ord){
-    board node;
-    int temp=ord;
-    
-    for (int r = 2; r >=0; r--) {
-        for (int c = 2; c >=0; c--) {
-            node.e[r][c]=temp%7;
-            temp=temp/7;
-        }
-    }
-    // print_board(node);
-    return node;
-}
-#define maxi (5003550000) 
 std::vector<int> solve(const board& src, const board& dest)
-{ 
-    queue <int> q;
-    int visited[maxi];
-    int parent[maxi];
-    int initial=ord(src);
-    int final=ord(dest);
-    q.push(ord(src));
+{
+    queue<board, max_states> q;
+    int visited[max_states];
+    board parent[max_states];
+
+    enqueue(q, src);
     visited[ord(src)] = L;
-    int temp=0;
-    while (!q.empty()) {
-        int child = q.front();
-        q.pop();
-        board u=decode(child);
-        if (child==final) {
+
+    while (!is_empty(q)) {
+        board u = dequeue(q);
+        if (is_same(u, dest)) {
             /* return the moves to get to u from src. */
             std::vector<int> moves;
-            while (child!=initial) {
-                moves.push_back(visited[child]);
-                child=parent[child];
+            board c = u;
+            int o = ord(c);
+            while (!is_same(c, src)) {
+                moves.push_back(visited[o]);
+                c = parent[o];
+                o = ord(c);
             }
             std::reverse(moves.begin(), moves.end());
             return moves;
@@ -191,27 +197,25 @@ std::vector<int> solve(const board& src, const board& dest)
 
         if (!visited[aord]) {
             visited[aord] = U;
-            parent[aord] = child;
-            q.push(aord);
+            parent[aord] = u;
+            enqueue(q, a);
         }
         if (!visited[bord]) {
             visited[bord] = D;
-            parent[bord] = child;
-            q.push( bord);
+            parent[bord] = u;
+            enqueue(q, b);
         }
         if (!visited[cord]) {
             visited[cord] = L;
-            parent[cord] = child;
-            q.push(cord);
+            parent[cord] = u;
+            enqueue(q, c);
         }
         if (!visited[dord]) {
             visited[dord] = R;
-            parent[dord] = child;
-            q.push(dord);
+            parent[dord] = u;
+            enqueue(q, d);
         }
-        temp+=1;
     }
-    return std::vector<int>();
     assert(0);
 }
 
@@ -232,19 +236,9 @@ int main()
 {
     board src, dest;
 
-    //u read_board(src);
-    // read_board(dest);
-    for (int r = 0; r < 3; ++r) {
-        for (int c = 0; c < 3; ++c) {
-            src.e[r][c]=1;
-            dest.e[r][c]=2;
-        }
-    }
-    src.e[1][1]=0;
-    dest.e[1][1]=0;
+    read_board(src);
+    read_board(dest);
 
-    print_board(src);
-    print_board(dest);
     auto moves = solve(src, dest);
     print_moves(moves);
 
