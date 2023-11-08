@@ -9,16 +9,15 @@ struct board {
     int e[3][3];
 };
 
-// constexpr int fact(int i)
-// {
-//     int p = 1;
-//     for (int j = 2; j <= i; ++j) {
-//         p *= j;
-//     }
-//     return p;
-//}
-
-
+/*
+0 --> empty space
+1 --> Top
+2 --> Bottom
+3 --> Left
+4 --> Right
+5 --> Front
+6 --> Back
+*/
 
 void print_board(const board& b)
 {
@@ -50,77 +49,90 @@ std::tuple<int, int> find_space(const board& b)
 {
     for (int r = 0; r < 3; ++r)
         for (int c = 0; c < 3; ++c)
-            if (b.e[r][c] == 9) return { r, c };
+            if (b.e[r][c] == 0) return { r, c };
     assert(0);
 }
 
 board up(const board& b)
 {
-    const auto [r, c] = find_space(b);
+    const auto [r,c]= find_space(b);
     if (r == 0) return b;
     board o = b;
-    switch (o.e[r-1][c]){
-        case 0: o.e[r-1][c]=4;break;
-        case 1: o.e[r-1][c]=2;break;
-        case 2: o.e[r-1][c]=0;break;
-        case 3: o.e[r-1][c]=3;break;
-        case 4: o.e[r-1][c]=1;break;
-        case 5: o.e[r-1][c]=5;break;
-        default: assert(0) ;   }
-    swap(o.e[r-1][c], o.e[r][c]);
+    if (o.e[r-1][c]==1){
+        o.e[r][c]=6;
+    }else if (o.e[r-1][c]==2){
+        o.e[r][c]=5;
+    }else if (o.e[r-1][c]==5){
+        o.e[r][c]=1;
+    }else if (o.e[r-1][c]==6){
+        o.e[r][c]=2;
+    }else{
+        o.e[r][c]=o.e[r-1][c];
+    }
+    o.e[r-1][c]=0;
     return o;
 }
 
 board down(const board& b)
 {
-    const auto [r, c] = find_space(b);
+    const auto [r,c]= find_space(b);
     if (r == 2) return b;
     board o = b;
-    switch (o.e[r+1][c]){
-        case 0: o.e[r+1][c]=2;break;
-        case 1: o.e[r+1][c]=4;break;
-        case 2: o.e[r+1][c]=1;break;
-        case 3: o.e[r+1][c]=3;break;
-        case 4: o.e[r+1][c]=0;break;
-        case 5: o.e[r+1][c]=5;break;
-        default: assert(0) ;   }
-    swap(o.e[r+1][c], o.e[r][c]);
+    if (o.e[r+1][c]==1){
+        o.e[r][c]=5;
+    }else if (o.e[r+1][c]==2){
+        o.e[r][c]=6;
+    }else if (o.e[r+1][c]==5){
+        o.e[r][c]=2;
+    }else if (o.e[r+1][c]==6){
+        o.e[r][c]=1;
+    }else{
+        o.e[r][c]=o.e[r+1][c];
+    }
+    o.e[r+1][c]=0;
     return o;
 }
 
 board left(const board& b)
 {
-    const auto [r, c] = find_space(b);
+    const auto [r,c]= find_space(b);
     if (c == 0) return b;
     board o = b;
-    switch (o.e[r][c-1]){
-        case 0: o.e[r][c-1]=3;break;
-        case 1: o.e[r][c-1]=5;break;
-        case 2: o.e[r][c-1]=2;break;
-        case 3: o.e[r][c-1]=1;break;
-        case 4: o.e[r][c-1]=4;break;
-        case 5: o.e[r][c-1]=0;break;
-        default: assert(0) ;   }
-    swap(o.e[r][c-1], o.e[r][c]);
+    if (o.e[r][c-1]==1){
+        o.e[r][c]=4;
+    }else if (o.e[r][c-1]==4){
+        o.e[r][c]=2;
+    }else if (o.e[r][c-1]==2){
+        o.e[r][c]=3;
+    }else if (o.e[r][c-1]==3){
+        o.e[r][c]=1;
+    }else{
+        o.e[r][c]=o.e[r][c-1];
+    }
+    o.e[r][c-1]=0;
     return o;
 }
 
 board right(const board& b)
 {
-    const auto [r, c] = find_space(b);
+    const auto [r,c]= find_space(b);
     if (c == 2) return b;
     board o = b;
-     switch (o.e[r][c-1]){
-        case 0: o.e[r][c+1]=5;break;
-        case 1: o.e[r][c+1]=3;break;
-        case 2: o.e[r][c+1]=2;break;
-        case 3: o.e[r][c+1]=0;break;
-        case 4: o.e[r][c+1]=4;break;
-        case 5: o.e[r][c+1]=1;break;
-        default: assert(0) ;   }
-    swap(o.e[r][c+1], o.e[r][c]);
+    if (o.e[r][c+1]==1){
+        o.e[r][c]=3;
+    }else if (o.e[r][c+1]==3){
+        o.e[r][c]=2;
+    }else if (o.e[r][c+1]==2){
+        o.e[r][c]=4;
+    }else if (o.e[r][c+1]==4){
+        o.e[r][c]=1;
+    }else{
+        o.e[r][c]=o.e[r][c+1];
+    }
+    o.e[r][c+1]=0;
     return o;
 }
+
 
 bool is_same(const board& a, const board &b)
 {
@@ -216,6 +228,8 @@ std::vector<int> solve(const board& src, const board& dest)
             enqueue(q, d);
         }
     }
+    printf("The given board is not solvable");
+    return std::vector<int>();
     assert(0);
 }
 
