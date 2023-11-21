@@ -100,6 +100,11 @@ void read_board(colb& b)
     for (int r = 0; r < 6; ++r) {
         for(int cl = 0; cl < 4; ++cl){
             scanf("%s", &b.c[r][cl]);
+            if(b.c[r][cl]=='r'){
+                b.c[r][cl]='o';
+            }else if(b.c[r][cl]=='o'){
+                b.c[r][cl]='r';
+            }
         }
     }
 }
@@ -228,8 +233,8 @@ std::vector<int> solve(const board& src, const board& dest)
         }
         temp+=1;
     }
+    printf("Not solvable!");
     return std::vector<int>();
-    assert(0);
 }
 
 void print_moves(const std::vector<int>& moves)
@@ -251,7 +256,7 @@ void print_moves(const std::vector<int>& moves)
 }
 
 int main()
-{
+{   printf("The cubelet which is in the back left bottom should have green colour to its left, yellow to the bottom and red facing backwards.");
     board  dest;
     colb src1;
 
